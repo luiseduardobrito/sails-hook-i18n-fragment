@@ -25,8 +25,8 @@ module.exports = function (sails) {
 
           // Using condition to filter out static files requests.
           if (request.accepted.some(function (type) {
-            return type.value === 'text/html';
-          })) {
+              return type.value === 'text/html';
+            })) {
             activeLocale = request.getLocale();
             response.locals.fragment = deasync(getFragment);
           }
@@ -45,13 +45,15 @@ module.exports = function (sails) {
    * @param {string} address
    * @param {function} callback
    */
-  function getFragment (address, callback) {
+  function getFragment(address, context, callback) {
 
     var path = getFragmentPath(address, activeLocale);
     var cached = cache.get(path);
 
-    if(cached) {
-      callback(null, cached);
+    if (cached) {
+      setTimeout(function () {
+        callback(null, cached);
+      }, 50);
     }
 
     fs.readFile(path, 'utf8', function (error, source) {
@@ -82,11 +84,11 @@ module.exports = function (sails) {
    *
    * @returns {string}
    */
-  function getFragmentPath (address, locale) {
+  function getFragmentPath(address, locale) {
     return sails.config[configKey].path
       .replace('{locale}', locale)
       .replace('{path}', address.replace('.', '/'))
-    ;
+      ;
   }
 
 };
